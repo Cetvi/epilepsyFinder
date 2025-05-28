@@ -1,0 +1,19 @@
+{
+    "name": "Dataset_Epilepsy",
+    "description": "Segmentaci\u00f3n de epilepsia y materia blanca",
+    "tensorImageSize": "3D",
+    "reference": "TFG",
+    "licence": "Sin licencia",
+    "release": "1.0",
+    "channel_names": {
+        "0": "FLAIR",
+        "1": "T1"
+    },
+    "labels": {
+        "background": 0,
+        "lesion": 1
+    },
+    "numTraining": 78,
+    "numtest": 8,
+    "file_ending": ".nii.gz"
+}
