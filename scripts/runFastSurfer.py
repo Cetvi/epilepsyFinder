@@ -43,6 +43,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     userId = sys.argv[1]
+    projectId = sys.argv[2]
     
     lock_path = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'processing.lock')
     with open(lock_path, 'w') as f:
@@ -57,7 +58,7 @@ if __name__ == "__main__":
     runFastSurfer(folder=folder, file=file, output=outputFolder)
     endTime = time.time()
     inference()
-    createImages(userId)
+    createImages(userId, projectId)
     lock_path = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'processing.lock')
     if os.path.exists(lock_path):
         os.remove(lock_path)

@@ -6,6 +6,8 @@ import os
 import re
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+from convertMriToVtk import convert_mri_mask_to_json
+from moreInfo import create_info_json
 
 def detect_latest_number(base_dir):
     registered_dirs = [d for d in os.listdir(base_dir) if re.match(r'registered_\d+', d)]
@@ -16,7 +18,7 @@ def detect_latest_number(base_dir):
     number = int(re.findall(r'\d+', latest)[0])
     return number
 
-def create_images(flair_path, t1_path, mask_path, output_folder, type, userId):
+def create_images(flair_path, t1_path, mask_path, output_folder, type, userId, projectId):
     os.makedirs(output_folder, exist_ok=True)
 
     flair_img = nib.load(flair_path)
@@ -32,17 +34,17 @@ def create_images(flair_path, t1_path, mask_path, output_folder, type, userId):
 
     fig_flair = plotting.plot_roi(mask_img, flair_img, cmap='autumn', cut_coords=cut_coords,
                                   display_mode='ortho', draw_cross=True, title="FLAIR with mask")
-    fig_flair.savefig(os.path.join(output_folder, f"flair_mask_overlay_{type}_{userId}.png"))
+    fig_flair.savefig(os.path.join(output_folder, f"flair_mask_overlay_{type}_{projectId}_{userId}.png"))
     fig_flair.close()
 
     fig_t1 = plotting.plot_roi(mask_img, t1_img, cmap='autumn', cut_coords=cut_coords,
                                display_mode='ortho', draw_cross=True, title="T1 with mask")
-    fig_t1.savefig(os.path.join(output_folder, f"t1_mask_overlay_{type}_{userId}.png"))
+    fig_t1.savefig(os.path.join(output_folder, f"t1_mask_overlay_{type}_{projectId}_{userId}.png"))
     fig_t1.close()
 
     print("Imágenes guardadas en:", output_folder)
 
-def create_segmentation_image(anat_path, seg_path, lut_path, output_path, title="Segmentation Overlay", userId=None):
+def create_segmentation_image(anat_path, seg_path, lut_path, output_path, title="Segmentation Overlay", userId=None, projectId=None):
     def read_freesurfer_lut(lut_path):
         lut = {}
         with open(lut_path, 'r') as f:
@@ -91,7 +93,7 @@ def create_segmentation_image(anat_path, seg_path, lut_path, output_path, title=
 
     print("Imagen de segmentación guardada en:", output_path)
 
-def main(userId):
+def main(userId, projectId):
     processed_base = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\temporalFiles'
     output_folder = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\images\resultImages'
     fast_surfer_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\fileFolder\image-1\mri\niiFiles'
@@ -111,9 +113,15 @@ def main(userId):
 
     segmentation_path = os.path.join(fast_surfer_path, 'aparc.DKTatlas+aseg.deep.nii')
     lut_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\textFiles\FreeSurferColorLUT.txt'
-    seg_output_path = os.path.join(output_folder, f"segmentation_overlay_{userId}.png")
+    seg_output_path = os.path.join(output_folder, f"segmentation_overlay_{projectId}_{userId}.png")
 
-    create_segmentation_image(temporal_flair_path, segmentation_path, lut_path, seg_output_path, title="Segmentation Overlay", userId=userId)
+    create_segmentation_image(temporal_flair_path, segmentation_path, lut_path, seg_output_path, title="Segmentation Overlay", userId=userId, projectId=projectId)
+
+    vkt_output_path = fr'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\volume_data_{projectId}_{userId}.json'
+    convert_mri_mask_to_json(t1_path, segmentation_path, vkt_output_path)
+
+    create_info_json(mask_path, segmentation_path, fr'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\extraInfo_{projectId}_{userId}.json')
+    #aqui tengo que crear las imagenes de las labes y zonas interesantes
 
 if __name__ == "__main__":
     main()

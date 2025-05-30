@@ -9,17 +9,42 @@ window.Alpine = Alpine;
 Alpine.start();
 
 
-jQuery(function($) {
+jQuery(function ($) {
     uploadMri();
     ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+    hideImages();
+    window.deleteProject = function (projectId) {
+
+        if (confirm("Are you sure you want to delete this project? This action cannot be undone.")) {
+            $.ajax({
+                url: "delete-project",
+                data: { "projectId": projectId },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        alert('Project deleted successfully.');
+                        location.reload();
+                    } else {
+                        alert('Error deleting project: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error deleting project:', error);
+                    alert('Error deleting project');
+                }
+            });
+        }
+
+    }
+
 });
 
-function uploadMri(){
-    $("#uploadFiles").on("click", function(e) {
+function uploadMri() {
+    $("#uploadFiles").on("click", function (e) {
         e.preventDefault();
 
         let name = $("#project-name").val();
@@ -48,8 +73,8 @@ function uploadMri(){
             data: formData,
             processData: false,
             contentType: false,
-            success: function(response) {
-                if(response.status === 'success') {
+            success: function (response) {
+                if (response.status === 'success') {
                     alert('Files uploaded successfully! You will be notified when the processing is complete.');
                     $("#project-name").val('');
                     $("#dataNifty").val('');
@@ -60,11 +85,11 @@ function uploadMri(){
                     alert('The server is currently busy. You will be notified when the server is ready to process your files.');
                 }
 
-                if(response.status === 'error') {
+                if (response.status === 'error') {
                     alert(response.message);
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Error uploading files:', error);
                 alert('Error uploading files');
             }
@@ -73,22 +98,139 @@ function uploadMri(){
 }
 
 function startCheckingLock() {
-    setInterval(function() {
-        checkLockStatus().done(function(response) {
-            if(!response.locked) {
+    setInterval(function () {
+        checkLockStatus().done(function (response) {
+            if (!response.locked) {
                 $.ajax({
                     url: '/processing.done',
                     type: 'POST',
-                    success: function() {
+                    success: function () {
                         alert('Processing is complete. You can now upload new files.');
                         $("#lockStatus").text("System is ready for new uploads.");
                     },
                 });
-            } 
-        }).fail(function() {
+            }
+        }).fail(function () {
             console.error('No se pudo verificar el estado del lock.');
             $("#lockStatus").text("Error al verificar el sistema.");
         });
     }, 3000);
+}
+
+function hideImages() {
+    $("#optionForm").on('change', async function () {
+        const selected = $('input[name="option"]:checked').val();
+
+        $('.diffOptions:visible').addClass('hidden');
+        $('.' + selected).removeClass('hidden');
+
+        if (selected === 'segmentation') {
+            $('#vtk-container').removeClass('hidden');
+
+            // Esperar a que el contenedor sea visible
+            setTimeout(async () => {
+                if (!window.vtkReady) {
+                    await initVTK(); // Cargar solo la primera vez
+                } else {
+                    window.renderWindow.resize();
+                    window.renderWindow.render();
+                }
+            }, 10);
+        } else {
+            $('#vtk-container').addClass('hidden');
+        }
+    });
+
+    // Disparar evento manual al cargar para establecer estado inicial
+    $('#optionForm').trigger('change');
+}
+
+
+async function initVTK() {
+    const vtk = window.vtk;
+    if (!vtk) return console.error("vtk.js no cargado");
+    let extraData = $('#extraData').val();
+    const response = await fetch('/json/volume_data' + extraData + '.json');
+    const json = await response.json();
+
+    const { dimensions, mri, mask } = json;
+    const [xDim, yDim, zDim] = dimensions;
+
+    const fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance({
+        rootContainer: document.getElementById('vtk-container'),
+        containerStyle: {
+            height: '100%',
+            width: '100%',
+            position: 'relative'
+        },
+    });
+
+    const renderer = fullScreenRenderer.getRenderer();
+    const renderWindow = fullScreenRenderer.getRenderWindow();
+    window.renderWindow = renderWindow;
+    window.vtkReady = true;
+
+
+    const imageDataMRI = vtk.Common.DataModel.vtkImageData.newInstance();
+    imageDataMRI.setDimensions(xDim, yDim, zDim);
+    imageDataMRI.getPointData().setScalars(
+        vtk.Common.Core.vtkDataArray.newInstance({
+            name: 'MRI',
+            values: new Float32Array(mri),
+            numberOfComponents: 1,
+        })
+    );
+
+    const mriMapper = vtk.Rendering.Core.vtkVolumeMapper.newInstance();
+    mriMapper.setInputData(imageDataMRI);
+    const mriActor = vtk.Rendering.Core.vtkVolume.newInstance();
+    mriActor.setMapper(mriMapper);
+
+    const mriProperty = mriActor.getProperty();
+    mriProperty.getRGBTransferFunction(0).addRGBPoint(0, 0.0, 0.0, 0.0);
+    mriProperty.getRGBTransferFunction(0).addRGBPoint(1000, 1.0, 1.0, 1.0);
+    mriProperty.getScalarOpacity(0).addPoint(0, 0.0);
+    mriProperty.getScalarOpacity(0).addPoint(1000, 1.0);
+    mriProperty.setScalarOpacityUnitDistance(0, 1.0);
+
+    renderer.addVolume(mriActor);
+
+
+    const imageDataMask = vtk.Common.DataModel.vtkImageData.newInstance();
+    imageDataMask.setDimensions(xDim, yDim, zDim);
+    imageDataMask.getPointData().setScalars(
+        vtk.Common.Core.vtkDataArray.newInstance({
+            name: 'mask',
+            values: new Uint16Array(mask),
+            numberOfComponents: 1,
+        })
+    );
+
+    const maskMapper = vtk.Rendering.Core.vtkVolumeMapper.newInstance();
+    maskMapper.setInputData(imageDataMask);
+
+    const maskActor = vtk.Rendering.Core.vtkVolume.newInstance();
+    maskActor.setMapper(maskMapper);
+
+    const maskColorTransfer = maskActor.getProperty().getRGBTransferFunction(0);
+    const maskOpacityTransfer = maskActor.getProperty().getScalarOpacity(0);
+
+    for (const [labelIdStr, color] of Object.entries(colorLut)) {
+        const labelId = Number(labelIdStr);
+        const [r, g, b] = color;
+        maskColorTransfer.addRGBPoint(labelId, r, g, b);
+        maskOpacityTransfer.addPoint(labelId, labelId === 0 ? 0.0 : 0.3);
+    }
+
+    maskActor.getProperty().setScalarOpacityUnitDistance(0, 3.0);
+    renderer.addVolume(maskActor);
+
+    const camera = renderer.getActiveCamera();
+    camera.setFocalPoint(0, 0, 0);
+    camera.setPosition(10, -1, -2);
+    camera.setViewUp(0, -2, 0);
+
+    renderer.resetCamera();
+    renderWindow.render();
 }
 

@@ -4,11 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Projects;
 
-class uploadNiftyController extends Controller
+class UploadNiftyController extends Controller
 {
     public function uploadNifty(Request $request){
- 
+
+        $projectName = $request->all('name')['name'];
+
+        $project = new Projects();
+        $newProject = json_decode($project->createProject($projectName)->content(), true);
+
+        if(!$newProject['success']){
+            return response()->json(['error' => 'Error creating project'], 500);
+        }else{
+            $projectId = $newProject['project_id'];
+        }
+
         if($request->fileCount != 2){
             return response()->json(['error' => 'There are needed 2 files'], 422);
         }
@@ -53,14 +65,14 @@ class uploadNiftyController extends Controller
             $path1 = $request->file('file0')->storeAs('nii_files', 'patient_001_0001.nii.gz');
         }
         
-        return self::runFastSurfer();
+        return self::runFastSurfer($projectId);
     }
 
-    public function runFastSurfer(){
+    public function runFastSurfer($projectId){
 
         $scriptPath = base_path('scripts/runFastSurfer.py');
         $userId = Auth::id();
-        pclose(popen("start /B python $scriptPath $userId", "r"));
+        pclose(popen("start /B python $scriptPath $userId $projectId", "r"));
 
         return response()->json(['status' => 'success']);
         

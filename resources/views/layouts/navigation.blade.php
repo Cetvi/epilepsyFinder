@@ -18,12 +18,12 @@
                 </div>
 
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('projects') }}"></a>
+                    <a href="{{ route('show.projects') }}"></a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('projects')" :active="request()->routeIs('projects')">
+                    <x-nav-link :href="route('show.projects')" :active="request()->routeIs('show.projects')">
                         {{ __('Projects') }}
                     </x-nav-link>
                 </div>
