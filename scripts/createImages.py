@@ -120,7 +120,9 @@ def main(userId, projectId):
     vkt_output_path = fr'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\volume_data_{projectId}_{userId}.json'
     convert_mri_mask_to_json(t1_path, segmentation_path, vkt_output_path)
 
-    create_info_json(mask_path, segmentation_path, fr'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\extraInfo_{projectId}_{userId}.json')
+    anat_img_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\fileFolder\image-1\mri\niiFiles\orig.nii'
+    output_img_dir = r"C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\images\resultImages"
+    create_info_json(mask_path, segmentation_path, anat_img_path,  fr'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\extraInfo_{projectId}_{userId}.json', output_img_dir, f'_{projectId}_{userId}')
     #aqui tengo que crear las imagenes de las labes y zonas interesantes
 
 if __name__ == "__main__":

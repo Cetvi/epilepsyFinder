@@ -19,9 +19,7 @@
     </x-slot>
     @if($flagUrl)
         <input type="text" id="extraData" value="{{ $extraData }}" class="hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col lg:flex-row gap-6">
-
-            
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col lg:flex-row gap-6">   
             <aside
                 class="w-full lg:w-1/4 sticky top-24 self-start bg-white border border-gray-200 rounded-xl shadow-sm p-4 h-fit">
                 <h3 class="text-md font-semibold text-gray-700 mb-4">Opciones</h3>
@@ -77,8 +75,8 @@
 
             </main>
         </div>
-        <a href="#"
-            class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-200">
+        <a href="{{ route('show-more-info', ['project_id' => $data['project_id'], 'user_id' => $data['user_id']]) }}"
+            class="fixed bottom-6 more-info right-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-200">
             More info
         </a>
     @else

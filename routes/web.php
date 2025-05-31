@@ -1,15 +1,27 @@
 <?php
 
 use App\Http\Controllers\DeleteProject;
+use App\Http\Controllers\MoreInfo;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\inferenceController;
 use App\Http\Controllers\UploadNiftyController;
 use App\Http\Controllers\LockController;
-use App\Http\Controllers\processDone;
 use App\Http\Controllers\Projects;
 use App\Http\Controllers\VolumenController;
 use Illuminate\Support\Facades\Route;
+use App\Mail\ProcessFinishedMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
+Route::post('/send-mail-notification', function () {
+    $email = Auth::user()->email;
+    $name = Auth::user()->name;
+
+    Mail::to($email)->send(new ProcessFinishedMail($name));
+
+    return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
+});
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,6 +39,9 @@ Route::get('/newProject', function () {
     return view('newProject');
 })->middleware(['auth', 'verified'])->name('projects.create');
 
+
+Route::get('/more-info', [MoreInfo::class, 'showMoreInfo'])->middleware(['auth', 'verified'])->name('show-more-info');
+
 Route::get('/show-inference', [VolumenController::class, 'show'])->middleware(['auth', 'verified'])->name('show-inference.get');
 
 Route::get('/show-projects', [Projects::class, 'showProjects'])->middleware(['auth', 'verified'])->name('show.projects');
@@ -34,10 +49,6 @@ Route::get('/show-projects', [Projects::class, 'showProjects'])->middleware(['au
 Route::get('/delete-project', [Projects::class,'deleteProject'])->middleware(['auth', 'verified'])->name('delete.project');
 
 Route::post('/upload-image', [uploadNiftyController::class, 'uploadNifty'])->middleware(['auth', 'verified'])->name('upload.files');
-
-Route::post('/process-done', [processDone::class, 'processDone'])->middleware(['auth', 'verified'])->name('process.done');
-
-Route::post('/process-done', [processDone::class, 'processDone'])->middleware(['auth', 'verified'])->name('process.done');
 
 Route::get('/check-lock', [LockController::class, 'check']);
 

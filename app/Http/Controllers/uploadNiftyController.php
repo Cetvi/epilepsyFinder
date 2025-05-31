@@ -26,7 +26,7 @@ class UploadNiftyController extends Controller
         }
 
         $lockPath = storage_path('app/processing.lock');
-        
+
         if (file_exists($lockPath)) {
             return response()->json(['status' => 'busy']);
         }

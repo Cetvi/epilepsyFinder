@@ -17,6 +17,7 @@ jQuery(function ($) {
         }
     });
     hideImages();
+    controlImagesMoreInfo();
     window.deleteProject = function (projectId) {
 
         if (confirm("Are you sure you want to delete this project? This action cannot be undone.")) {
@@ -38,7 +39,6 @@ jQuery(function ($) {
                 }
             });
         }
-
     }
 
 });
@@ -99,22 +99,43 @@ function uploadMri() {
 
 function startCheckingLock() {
     setInterval(function () {
-        checkLockStatus().done(function (response) {
-            if (!response.locked) {
-                $.ajax({
-                    url: '/processing.done',
-                    type: 'POST',
-                    success: function () {
-                        alert('Processing is complete. You can now upload new files.');
-                        $("#lockStatus").text("System is ready for new uploads.");
-                    },
-                });
+        $.ajax({
+            url: '/check-lock',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response.locked) {
+                    console.log("Server is busy, lock is active.");
+                    
+                } else {
+                    console.log("Server is free, lock is inactive.");
+                    //sendMailNotification();
+                    //clearInterval(this);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al comprobar el lock:", error);
             }
-        }).fail(function () {
-            console.error('No se pudo verificar el estado del lock.');
-            $("#lockStatus").text("Error al verificar el sistema.");
         });
     }, 3000);
+}
+
+function sendMailNotification() {
+    $.ajax({
+        url: '/send-mail-notification',
+        type: 'POST',
+        success: function (response) {
+            if (response.status === 'success') {
+                alert('Notification email sent successfully.');
+            } else {
+                alert('Error sending notification email: ' + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error sending notification email:', error);
+            alert('Error sending notification email');
+        }
+    });
 }
 
 function hideImages() {
@@ -234,3 +255,20 @@ async function initVTK() {
     renderWindow.render();
 }
 
+
+function controlImagesMoreInfo(){
+    $(document).on('click', '.toggle-btn', function () {
+        console.log('Toggle button clicked');
+        const targetId = $(this).data('target');
+        const $img = $('#' + targetId);
+
+        if ($img.is(':visible')) {
+            $img.hide();
+            $(this).text('+');
+        } else {
+            $img.show();
+            $(this).text('-');
+        }
+
+    });
+}
