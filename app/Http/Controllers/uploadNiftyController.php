@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Projects;
+use App\Http\Controllers\Process as Nprocess;
 
 class UploadNiftyController extends Controller
 {
@@ -25,11 +26,6 @@ class UploadNiftyController extends Controller
             return response()->json(['error' => 'There are needed 2 files'], 422);
         }
 
-        $lockPath = storage_path('app/processing.lock');
-
-        if (file_exists($lockPath)) {
-            return response()->json(['status' => 'busy']);
-        }
 
         $request->validate([
             'file0' => [
@@ -56,6 +52,15 @@ class UploadNiftyController extends Controller
         $fileName1 = $request->file('file1')->getClientOriginalName();
 
         $orderFiles = self::returnOrderFiles($fileName0, $fileName1);
+
+        $lockPath = storage_path('app/processing.lock');
+        $process = new Nprocess();
+        $userId = Auth::id();
+        $process->dbInsert($projectId, $userId);
+        if (file_exists($lockPath)) {
+            self::insertQueueFiles($projectId, $userId, $orderFiles, $request);
+            return response()->json(['status' => 'busy']);
+        }
         
         if($orderFiles[0] == $fileName0){
             $path0 = $request->file('file0')->storeAs('nii_files', 'patient_001_0000.nii.gz');
@@ -64,14 +69,15 @@ class UploadNiftyController extends Controller
             $path0 = $request->file('file1')->storeAs('nii_files', 'patient_001_0000.nii.gz');
             $path1 = $request->file('file0')->storeAs('nii_files', 'patient_001_0001.nii.gz');
         }
-        
-        return self::runFastSurfer($projectId);
+
+        $userId = Auth::id();
+        return self::runFastSurfer($projectId, $userId);
     }
 
-    public function runFastSurfer($projectId){
+    public function runFastSurfer($projectId, $userId){
 
         $scriptPath = base_path('scripts/runFastSurfer.py');
-        $userId = Auth::id();
+        
         pclose(popen("start /B python $scriptPath $userId $projectId", "r"));
 
         return response()->json(['status' => 'success']);
@@ -97,5 +103,18 @@ class UploadNiftyController extends Controller
         }
 
         return $orderFiles;
+    }
+
+    public function insertQueueFiles($projectId, $userId, $orderFiles, $request)
+    {
+        $extraInfo = '_' . $projectId . '_' . $userId;
+        $fileName0 = $request->file('file0')->getClientOriginalName();
+        if($orderFiles[0] == $fileName0){
+            $path0 = $request->file('file0')->storeAs('nii_files\queueImages', 'patient_001_0000'.$extraInfo.'.nii.gz');
+            $path1 = $request->file('file1')->storeAs('nii_files\queueImages', 'patient_001_0001'.$extraInfo.'.nii.gz');
+        }else{
+            $path0 = $request->file('file1')->storeAs('nii_files\queueImages', 'patient_001_0000'.$extraInfo.'.nii.gz');
+            $path1 = $request->file('file0')->storeAs('nii_files\queueImages', 'patient_001_0001'.$extraInfo.'.nii.gz');
+        }
     }
 }
