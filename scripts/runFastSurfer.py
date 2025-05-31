@@ -5,6 +5,7 @@ import sys
 from postPorcesing import main as postProcessing
 from runInference import run_batch_script as inference
 from createImages import main as createImages
+from processDone import notifyProcessFinished
 
 def runFastSurfer(folder, file, output):
     cmd = [
@@ -60,6 +61,7 @@ if __name__ == "__main__":
     inference()
     createImages(userId, projectId)
     lock_path = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'processing.lock')
+    notifyProcessFinished(userId, projectId)
     if os.path.exists(lock_path):
         os.remove(lock_path)
     print("Tiempo de ejecución:", endTime - startTime)
