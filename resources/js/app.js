@@ -11,6 +11,7 @@ Alpine.start();
 
 jQuery(function ($) {
     uploadMri();
+    lastProject();
     ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -42,6 +43,20 @@ jQuery(function ($) {
     }
 
 });
+
+function lastProject() {
+    $.ajax({
+        url: '/last-project',
+        type: 'GET',
+        dataType: 'html',
+        success: function (data) {
+            $('#cardLastProject').html(data);
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching last project:', error);
+        }
+    });
+}
 
 function uploadMri() {
     $("#uploadFiles").on("click", function (e) {
@@ -76,14 +91,14 @@ function uploadMri() {
             success: function (response) {
                 if (response.status === 'success') {
                     alert('Files uploaded successfully! You will be notified when the processing is complete.');
-                    $("#project-name").val('');
-                    $("#dataNifty").val('');
-                    startCheckingLock();
+
                 }
 
                 if (response.status === 'busy') {
-                    alert('The server is currently busy. You will be notified when the server is ready to process your files.');
+                    alert('The server is currently busy. Your files have been processed. You will be notified when the processing is complete.');
                 }
+
+                window.location.href = '/projects';
 
                 if (response.status === 'error') {
                     alert(response.message);
@@ -120,24 +135,6 @@ function startCheckingLock() {
     }, 3000);
 }
 
-function sendMailNotification() {
-    $.ajax({
-        url: '/send-mail-notification',
-        type: 'POST',
-        success: function (response) {
-            if (response.status === 'success') {
-                alert('Notification email sent successfully.');
-            } else {
-                alert('Error sending notification email: ' + response.message);
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('Error sending notification email:', error);
-            alert('Error sending notification email');
-        }
-    });
-}
-
 function hideImages() {
     $("#optionForm").on('change', async function () {
         const selected = $('input[name="option"]:checked').val();
@@ -148,10 +145,9 @@ function hideImages() {
         if (selected === 'segmentation') {
             $('#vtk-container').removeClass('hidden');
 
-            // Esperar a que el contenedor sea visible
             setTimeout(async () => {
                 if (!window.vtkReady) {
-                    await initVTK(); // Cargar solo la primera vez
+                    await initVTK();
                 } else {
                     window.renderWindow.resize();
                     window.renderWindow.render();
@@ -162,7 +158,6 @@ function hideImages() {
         }
     });
 
-    // Disparar evento manual al cargar para establecer estado inicial
     $('#optionForm').trigger('change');
 }
 

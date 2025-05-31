@@ -16,24 +16,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-Route::post('//send-mail-finished', function () {
-    $email = Auth::user()->email;
-    $name = Auth::user()->name;
-
-    Mail::to($email)->send(new ProcessFinishedMail($name));
-
-    return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
-});
-
-Route::post('//send-mail-started', function () {
-    $email = Auth::user()->email;
-    $name = Auth::user()->name;
-
-    Mail::to($email)->send(new ProcessStartedMail($name));
-
-    return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
-});
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,6 +41,8 @@ Route::get('/show-inference', [VolumenController::class, 'show'])->middleware(['
 Route::get('/show-projects', [Projects::class, 'showProjects'])->middleware(['auth', 'verified'])->name('show.projects');
 
 Route::get('/delete-project', [Projects::class,'deleteProject'])->middleware(['auth', 'verified'])->name('delete.project');
+
+Route::get('/last-project', [Projects::class,'lastProject'])->middleware(['auth', 'verified'])->name('last.project');
 
 Route::post('/upload-image', [UploadNiftyController::class, 'uploadNifty'])->middleware(['auth', 'verified'])->name('upload.files');
 

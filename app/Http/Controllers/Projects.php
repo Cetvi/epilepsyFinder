@@ -59,4 +59,17 @@ class Projects extends Controller
 
         return response()->json(['success' => $success, 'project_id' => $projectId], 201);
     }
+
+    public function lastProject()
+    {
+        $id = Auth::id();
+        $project = DB::table('projects')
+            ->where('user_id', $id)
+            ->orderBy('create_date', 'desc')
+            ->first();
+
+        return view('lastProject', [
+            'project' => $project,
+        ]);
+    }
 }
