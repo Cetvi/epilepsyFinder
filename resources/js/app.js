@@ -17,6 +17,7 @@ jQuery(function ($) {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+    tutorial();
     hideImages();
     controlImagesMoreInfo();
     window.deleteProject = function (projectId) {
@@ -43,6 +44,19 @@ jQuery(function ($) {
     }
 
 });
+
+function tutorial() {
+    $(function() {
+        const userId = $('#userId').val();
+        const tutorialKey = `tutorial_shown_project_creation_user_${userId}`;
+        
+        if (!localStorage.getItem(tutorialKey)) {
+            introJs().start();
+            localStorage.setItem(tutorialKey, 'true');
+        }
+    });
+
+}
 
 function lastProject() {
     if(window.location.pathname == '/dashboard') {

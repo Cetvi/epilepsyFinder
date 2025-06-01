@@ -46,7 +46,6 @@ Route::get('/last-project', [Projects::class,'lastProject'])->middleware(['auth'
 
 Route::post('/upload-image', [UploadNiftyController::class, 'uploadNifty'])->middleware(['auth', 'verified'])->name('upload.files');
 
-Route::post('/process-finished', [Process::class, 'processFinished'])->middleware(['auth', 'verified'])->name('/process.finished');
 
 Route::get('/check-lock', [LockController::class, 'check']);
 

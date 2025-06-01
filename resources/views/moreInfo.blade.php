@@ -23,6 +23,7 @@ $firstLabel = array_key_first($jsonInfo);
                     <table class="min-w-full table-auto border-collapse border border-gray-300 mb-10">
                         <thead>
                             <tr class="bg-gray-100">
+                                <th class="border border-gray-300 px-4 py-2 text-left">Number</th>
                                 <th class="border border-gray-300 px-4 py-2 text-left">Name</th>
                                 <th class="border border-gray-300 px-4 py-2 text-left">Zone</th>
                                 <th class="border border-gray-300 px-4 py-2 text-left">Tissue</th>
@@ -31,8 +32,9 @@ $firstLabel = array_key_first($jsonInfo);
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($jsonInfo as $label)
+                            @foreach ($jsonInfo as $key => $label)
                                 <tr class="hover:bg-gray-50">
+                                    <td class="border border-gray-300 px-4 py-2">{{ $key }}</td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $label['name'] }}</td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $label['zone'] }}</td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $label['tissue'] }}</td>
@@ -50,10 +52,10 @@ $firstLabel = array_key_first($jsonInfo);
                     <p class="text-sm/20 mb-5">
                         This structure corresponds to the <strong>{{$jsonInfo[$firstLabel]['side']}}</strong> side of the brain and is located in the
                         <strong>{{$jsonInfo[$firstLabel]['tissue']}} {{$jsonInfo[$firstLabel]['zone']}}</strong>.
-                        A percentage of <strong>100%</strong> indicates that this region is entirely affected within the
+                        A percentage of <strong>{{ number_format($jsonInfo[$firstLabel]['percentage'] * 100, 2)}}%</strong> indicates that this region is entirely affected within the
                         analyzed lesion area, making it the most significant in the current context.
                     </p>
-                    <h2 class="text-lg font-semibold text-gray-800 mb-6">Label 41 in the brain:</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 mb-6">Label {{$firstLabel}} in the brain:</h2>
                     <div class="relative mb-8 max-w-xl mx-auto"> 
                         <button
                             class="toggle-btn absolute right-2 top-2 bg-gray-300 hover:bg-gray-400 rounded-full w-6 h-6 flex items-center justify-center font-bold text-lg select-none cursor-pointer"

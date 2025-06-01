@@ -1,11 +1,11 @@
 import requests
 
 def notifyProcessFinished(userId, projectId):
-    url = "http://http://127.0.0.1:8000/process-finished"
+    url = "http://127.0.0.1:8000/api/process-finished"
 
     data = {
-        "userId": userId,
-        "projectId": projectId,
+        "user_id": userId,
+        "project_id": projectId,
     }
     
     try:

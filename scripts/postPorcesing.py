@@ -206,6 +206,7 @@ def compress_directory(root_path):
 
 
 def filterRegions(text_dir, output_dir, file_dir, number):
+    os.makedirs(output_dir, exist_ok=True)
     flair_file = os.path.join(file_dir, f"skull_{number}" ,'flair', f"flair_{number}_skull_stripped_lia.nii.gz")
     t1_file = os.path.join(file_dir, f"skull_{number}" ,'t1', f"t1_{number}_skull_stripped_lia.nii.gz")
     flair_data = nib.load(flair_file).get_fdata()

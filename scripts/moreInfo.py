@@ -40,7 +40,7 @@ def plot_labels(anat_img_path, seg_img_path, labels, output_dir, name):
     centroid_mm = nib.affines.apply_affine(seg_img.affine, centroid)
     cut_coords = (centroid_mm[0], centroid_mm[1], centroid_mm[2])
 
-    print(f"Cortes inteligentes en mm para {name}: {cut_coords}")
+    print(f"Inteligents cuts in mm para {name}: {cut_coords}")
 
     fig = plotting.plot_roi(
         roi_img=combined_mask_img,
@@ -79,15 +79,16 @@ def create_info_json(lesion_mask, fastSurferSeg, anat_img, output_json, output_i
     }
 
     region_info = {
-        str(label): {
-            "name": MAP[label][0],
-            "zone": MAP[label][1],
-            "tissue": MAP[label][2],
-            "side": MAP[label][3],
-            "percentage": round(count / total_lesion_voxels, 4)
-        }
-        for label, count in zip(labels, counts)
+    str(label): {
+        "name": MAP.get(label, MAP[0])[0],
+        "zone": MAP.get(label, MAP[0])[1],
+        "tissue": MAP.get(label, MAP[0])[2],
+        "side": MAP.get(label, MAP[0])[3],
+        "percentage": round(count / total_lesion_voxels, 4)
     }
+    for label, count in zip(labels, counts)
+}
+
 
     region_info = dict(sorted(
         region_info.items(),

@@ -1,6 +1,10 @@
+<link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css" />
+<script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
+
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight" data-intro="Here you can create a new project"
+            data-step="1">
             {{ __('New project') }}
         </h2>
     </x-slot>
@@ -19,21 +23,22 @@
                             placeholder="Enter project name"
                             required
                             class="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none focus:ring-1"
+                            data-intro="You can enter the name of your new project!" data-step="2"
                         />
                     </label>
 
-                    <!-- Input de archivos existente -->
+                    
                     <label class="block w-full max-w-md mx-auto">
                         <span class="sr-only" id="chooseFiles">Choose files</span>
                         <input id="dataNifty" type="file" multiple name="files[]" accept=".gz"
                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
                                    file:rounded-md file:border-0
                                    file:bg-indigo-50 file:text-indigo-700
-                                   hover:file:bg-indigo-100" />
+                                   hover:file:bg-indigo-100" data-intro="And then upload one FLAIR file ended as _0000.nii.gz and one T1 file ended as _0001.nii.gz" data-step="3"/>
                     </label>
 
                     <div class="inline-flex items-center justify-center w-full max-w-md gap-x-2 mx-auto">
-                        <button id="uploadFiles" type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+                        <button id="uploadFiles" type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500" data-intro="Finally, click here to upload the files and start the process!!" data-step="4">
                             Upload only two .nii.gz files
                         </button>
                         <div class="relative group inline-block cursor-pointer">

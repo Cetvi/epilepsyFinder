@@ -1,6 +1,6 @@
 @if (!empty($project))
     @php
-        $extraData = '_' . $project->id . '_' . $project->user_id;
+        $extraData = '_' . $project->project_id . '_' . $project->user_id;
     @endphp
 
     <div class="w-full ">

@@ -2,6 +2,7 @@ import subprocess
 import time
 import os
 import sys
+import shutil
 from postPorcesing import main as postProcessing
 from runInference import run_batch_script as inference
 from createImages import main as createImages
@@ -34,8 +35,19 @@ def runFastSurfer(folder, file, output):
     except subprocess.CalledProcessError as e:
         print("Error en la ejecución:", e)
     finally:
-        
         postProcessing()
+
+def deleteFileFolder(folder):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f"Error trying to delete {file_path}: {e}")
+    
         
 
 if __name__ == "__main__":
@@ -56,12 +68,16 @@ if __name__ == "__main__":
 
     print("Iniciando procesamientoc de:", file)
     startTime = time.time()
-    runFastSurfer(folder=folder, file=file, output=outputFolder)
+    #runFastSurfer(folder=folder, file=file, output=outputFolder)
     endTime = time.time()
-    inference()
-    createImages(userId, projectId)
+    #inference()
+    #createImages(userId, projectId)
     lock_path = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'processing.lock')
     notifyProcessFinished(userId, projectId)
     if os.path.exists(lock_path):
         os.remove(lock_path)
+
+    deleteFileFolder(outputFolder)
+    print("Procesamiento finalizado")
+    
     print("Tiempo de ejecución:", endTime - startTime)
