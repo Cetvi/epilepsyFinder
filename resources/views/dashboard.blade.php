@@ -7,15 +7,35 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="p-6 text-gray-900 flex items-center space-x-2">
-                <button
-                    class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-600 new-project-button"
-                    onclick="window.location.href='{{ route('projects.create') }}'">
-                    +
-                </button>
-                <span>{{ __("Let's create a new project") }}</span>
-            </div>
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="flex flex-col w-full lg:w-1/2 gap-6">
+                    <button onclick="window.location.href='{{ route('projects.create') }}'"
+                        class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex justify-between items-center w-full text-left hover:bg-gray-50 transition">
+                        <span class="text-gray-900 text-lg font-medium">
+                            {{ __("Let's create a new project") }}
+                        </span>
+                        <span class="text-blue-500 hover:text-blue-700 text-xl">
+                            →
+                        </span>
+                    </button>
+                    <button
+                        class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex justify-between items-center w-full text-left hover:bg-gray-50 transition">
+                        <span class="text-gray-900 text-lg font-medium">
+                            {{ __('Tutorial') }}
+                        </span>
+                        <span class="text-blue-500 hover:text-blue-700 text-xl">
+                            →
+                        </span>
+                    </button>
+                </div>
+                
+                <div class="w-full lg:w-1/2">
+                    <div id="cardLastProject" class="relative h-full bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex flex-col justify-between">
+                        
+                    </div>
+                </div>
 
+            </div>
         </div>
     </div>
 </x-app-layout>

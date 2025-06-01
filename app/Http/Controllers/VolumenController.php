@@ -12,7 +12,6 @@ class VolumenController extends Controller
         $data = $request->all() ?? null;
         $path = storage_path('app/textFiles/FreeSurferColorLut.txt');
         $colorLut = $this->readFreesurferLut($path);
-        
         return view('showInference', ['colorLut' => json_encode($colorLut), 'data' => $data]);
     }
 
