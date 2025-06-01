@@ -22,11 +22,6 @@ class UploadNiftyController extends Controller
             $projectId = $newProject['project_id'];
         }
 
-        if($request->fileCount != 2){
-            return response()->json(['error' => 'There are needed 2 files'], 422);
-        }
-
-
         $request->validate([
             'file0' => [
                 'required',
@@ -77,7 +72,7 @@ class UploadNiftyController extends Controller
     public function runFastSurfer($projectId, $userId){
 
         $scriptPath = base_path('scripts/runFastSurfer.py');
-        
+
         pclose(popen("start /B python $scriptPath $userId $projectId", "r"));
 
         return response()->json(['status' => 'success']);

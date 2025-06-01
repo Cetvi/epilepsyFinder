@@ -27,12 +27,15 @@ yarn-error.log
 # Composer
 /auth.json
 
-# Tus datos grandes (¡esto es lo importante!)
-temporalFiles/
+textFiles/
+
+storage/temporalFiles/
 fileFolder/
+inference/
 public/json/
 **/*.nii
 **/*.nii.gz
+**/*.mgz
 *.jpg
 *.jpeg
 *.png

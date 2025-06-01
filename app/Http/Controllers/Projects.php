@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Projects extends Controller
 {
-    public function showProjects(Request $request)
+    public function showProjects()
     {
         $id = Auth::id();
         $projects = DB::table('projects')->where('user_id', $id)->get();

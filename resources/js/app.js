@@ -80,9 +80,8 @@ function uploadMri() {
 
         let formData = new FormData();
         formData.append('name', name);
-        for (let i = 0; i < files.length; i++) {
-            formData.append('files[]', files[i]);
-        }
+        formData.append('file0', files[0]);
+        formData.append('file1', files[1]);
 
         $.ajax({
             url: '/upload-image',
@@ -100,7 +99,7 @@ function uploadMri() {
                     alert('The server is currently busy. Your files have been processed. You will be notified when the processing is complete.');
                 }
 
-                window.location.href = '/projects';
+                window.location.href = '/show-projects';
 
                 if (response.status === 'error') {
                     alert(response.message);

@@ -12,7 +12,7 @@ def runFastSurfer(folder, file, output):
         "docker", "run", "--gpus", "all",
         "-v", rf"{folder}:/data",
         "-v", rf"{output}:/output",
-        "-v", "C:\\Users\\javie\\Desktop\\TFG\\FastSurfer\\FastSurfer:/fs_license",
+        "-v", "C:\\Users\\javie\\Desktop\\TFG\\app\\epilepsyFinder\\textFiles:/fs_license",
         "--rm", "--user", "1000:1000", "deepmi/fastsurfer:latest",
         "--fs_license", "/fs_license/license.txt",
         "--seg_only",
