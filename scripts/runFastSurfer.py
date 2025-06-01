@@ -34,14 +34,22 @@ def runFastSurfer(folder, file, output):
         "--sid", "image-1", "--sd", "/output"
         ]
     try:
-        result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = result.communicate()
-        print("Salida estándar:\n", out.decode(errors='ignore'))
-        print("Salida de error:\n", err.decode(errors='ignore'))
+
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+        
+        print("Salida estándar:\n", result.stdout)
+        print("Salida de error:\n", result.stderr)
+
         log("Ejecutando postProcessing...")
         postProcessing()
         log("postProcessing completado.")
 
+        if result.returncode != 0:
+            log(f"Error en docker run: código {result.returncode}")
+            log(f"stderr: {result.stderr}")
+
+    except subprocess.TimeoutExpired:
+        log("El proceso docker run excedió el tiempo límite y fue terminado.")
     except Exception as e:
         log(f"Error en runFastSurfer: {e}")
 
@@ -104,6 +112,7 @@ if __name__ == "__main__":
         endTime = time.time()
         log(f"Tiempo total de ejecución: {endTime - startTime:.2f} segundos")
         log("Procesamiento COMPLETADO correctamente.\n")
+        deleteFileFolder(outputFolder)
 
     except Exception as e:
         log(f"ERROR FATAL: {e}")

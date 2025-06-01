@@ -25,7 +25,7 @@
                         →
                     </span>
                 </button>
-                <button
+                <button id = "tutorialButton"
                     class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex justify-between items-center w-full lg:w-1/2 text-left hover:bg-gray-50 transition">
                     <span class="text-gray-900 text-lg font-medium">
                         {{ __('Tutorial') }}

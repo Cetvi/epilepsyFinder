@@ -46,16 +46,33 @@ jQuery(function ($) {
 });
 
 function tutorial() {
-    $(function() {
-        const userId = $('#userId').val();
-        const tutorialKey = `tutorial_shown_project_creation_user_${userId}`;
-        
-        if (!localStorage.getItem(tutorialKey)) {
-            introJs().start();
-            localStorage.setItem(tutorialKey, 'true');
-        }
+    $(document).on('click', '#tutorialButton', function () {
+        window.location.href= '/newProjectTutorial';
     });
 
+    $(function () {
+
+        if(window.location.pathname == '/newProjectTutorial') {
+            introJs()
+            .oncomplete(function() {
+                window.location.href = '/projectsTutorial';
+            })
+            .onexit(function() {
+                window.location.href = '/projectsTutorial';
+            })
+            .start();
+        }else if(window.location.pathname == '/projectsTutorial') {
+            introJs()
+            .oncomplete(function() {
+                window.location.href = '/dashboard';
+            })
+            .onexit(function() {
+                window.location.href = '/dashboard';
+            })
+            .start();
+        } 
+    }
+    );
 }
 
 function lastProject() {

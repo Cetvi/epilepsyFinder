@@ -76,7 +76,7 @@ class Process extends Controller
             if (file_exists($fileQueue1)) {
                 rename($fileQueue1, $file2);
             }
-
+            sleep(2); 
             $this->processStarted($userId, $projectId);
         }
     }

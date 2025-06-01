@@ -34,6 +34,14 @@ Route::get('/newProject', function () {
 })->middleware(['auth', 'verified'])->name('projects.create');
 
 
+Route::get('/newProjectTutorial', function () {
+    return view('tutorial/newProjectTutorial');
+});
+
+Route::get('/projectsTutorial', function () {
+    return view('tutorial/projectsTutorial');
+});
+
 Route::get('/more-info', [MoreInfo::class, 'showMoreInfo'])->middleware(['auth', 'verified'])->name('show-more-info');
 
 Route::get('/show-inference', [VolumenController::class, 'show'])->middleware(['auth', 'verified'])->name('show-inference.get');
