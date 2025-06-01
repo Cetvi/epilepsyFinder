@@ -97,6 +97,10 @@ function uploadMri() {
         formData.append('file0', files[0]);
         formData.append('file1', files[1]);
 
+        
+        $("#loadingSpinner").show();
+        $("#uploadFiles").prop("disabled", true);
+
         $.ajax({
             url: '/upload-image',
             type: 'POST',
@@ -104,28 +108,29 @@ function uploadMri() {
             processData: false,
             contentType: false,
             success: function (response) {
+                $("#loadingSpinner").hide();
+                $("#uploadFiles").prop("disabled", false);
+
                 if (response.status === 'success') {
                     alert('Files uploaded successfully! You will be notified when the processing is complete.');
-
-                }
-
-                if (response.status === 'busy') {
+                    window.location.href = '/show-projects';
+                } else if (response.status === 'busy') {
                     alert('The server is currently busy. Your files have been processed. You will be notified when the processing is complete.');
-                }
-
-                window.location.href = '/show-projects';
-
-                if (response.status === 'error') {
+                    window.location.href = '/show-projects';
+                } else if (response.status === 'error') {
                     alert(response.message);
                 }
             },
             error: function (xhr, status, error) {
+                $("#loadingSpinner").hide();
+                $("#uploadFiles").prop("disabled", false);
                 console.error('Error uploading files:', error);
                 alert('Error uploading files');
             }
         });
     });
 }
+
 
 function startCheckingLock() {
     setInterval(function () {

@@ -21,7 +21,7 @@ class ProcessStartedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Your process has finished')
+        return $this->subject('Your process has started')
                     ->view('emails.process_started');
     }
 }

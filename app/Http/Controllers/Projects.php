@@ -64,7 +64,9 @@ class Projects extends Controller
     {
         $id = Auth::id();
         $project = DB::table('projects')
-            ->where('user_id', $id)
+            ->join('process_control', 'projects.id', '=', 'process_control.project_id')
+            ->where('projects.user_id', $id)
+            ->where('process_control.done', 1)
             ->orderBy('create_date', 'desc')
             ->first();
 

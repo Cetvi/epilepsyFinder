@@ -8,7 +8,16 @@ from runInference import run_batch_script as inference
 from createImages import main as createImages
 from processDone import notifyProcessFinished
 
+# Ruta absoluta para el log
+LOG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'storage', 'logs', 'fastsurfer_debug.log'))
+
+def log(message):
+    """Escribe mensaje con timestamp en el log."""
+    with open(LOG_PATH, 'a') as f:
+        f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}\n")
+
 def runFastSurfer(folder, file, output):
+    log(f"Iniciando runFastSurfer con archivo: {file}")
     cmd = [
         "docker", "run", "--gpus", "all",
         "-v", rf"{folder}:/data",
@@ -23,21 +32,21 @@ def runFastSurfer(folder, file, output):
         "--no_surfreg",
         "--t1", f"/data/{file}",
         "--sid", "image-1", "--sd", "/output"
-    ]
-
+        ]
     try:
         result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = result.communicate()  
-
+        out, err = result.communicate()
         print("Salida estándar:\n", out.decode(errors='ignore'))
         print("Salida de error:\n", err.decode(errors='ignore'))
-
-    except subprocess.CalledProcessError as e:
-        print("Error en la ejecución:", e)
-    finally:
+        log("Ejecutando postProcessing...")
         postProcessing()
+        log("postProcessing completado.")
+
+    except Exception as e:
+        log(f"Error en runFastSurfer: {e}")
 
 def deleteFileFolder(folder):
+    log(f"Intentando eliminar contenido de: {folder}")
     for filename in os.listdir(folder):
         file_path = os.path.join(folder, filename)
         try:
@@ -45,39 +54,56 @@ def deleteFileFolder(folder):
                 os.unlink(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
+            log(f"Eliminado: {file_path}")
         except Exception as e:
-            print(f"Error trying to delete {file_path}: {e}")
-    
-        
+            log(f"Error eliminando {file_path}: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Error: se esperaba un argumento userId")
+    log("======== NUEVA EJECUCIÓN ========")
+
+    if len(sys.argv) < 3:
+        log("Error: faltan argumentos. Esperado: userId y projectId")
         sys.exit(1)
 
     userId = sys.argv[1]
     projectId = sys.argv[2]
-    
-    lock_path = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'processing.lock')
-    with open(lock_path, 'w') as f:
-        f.write('processing')
+    log(f"Argumentos recibidos: userId={userId}, projectId={projectId}")
 
-    outputFolder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fileFolder'))
-    folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'private', 'nii_files'))
-    file = 'patient_001_0001.nii.gz'
+    try:
+        lock_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'processing.lock'))
+        with open(lock_path, 'w') as f:
+            f.write('processing')
+        log("Lock file creado.")
 
-    print("Iniciando procesamientoc de:", file)
-    startTime = time.time()
-    #runFastSurfer(folder=folder, file=file, output=outputFolder)
-    endTime = time.time()
-    #inference()
-    #createImages(userId, projectId)
-    lock_path = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'processing.lock')
-    notifyProcessFinished(userId, projectId)
-    if os.path.exists(lock_path):
-        os.remove(lock_path)
+        outputFolder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fileFolder'))
+        folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'private', 'nii_files'))
+        file = 'patient_001_0001.nii.gz'
 
-    deleteFileFolder(outputFolder)
-    print("Procesamiento finalizado")
-    
-    print("Tiempo de ejecución:", endTime - startTime)
+        log(f"Ruta de entrada: {folder}")
+        log(f"Ruta de salida: {outputFolder}")
+
+        startTime = time.time()
+
+        runFastSurfer(folder=folder, file=file, output=outputFolder)
+
+        log("Ejecutando inference()...")
+        inference()
+        log("inference completado.")
+
+        log("Ejecutando createImages()...")
+        createImages(userId, projectId)
+        log("createImages completado.")
+
+        notifyProcessFinished(userId, projectId)
+        log("notifyProcessFinished ejecutado.")
+
+        if os.path.exists(lock_path):
+            os.remove(lock_path)
+            log("Lock file eliminado.")
+
+        endTime = time.time()
+        log(f"Tiempo total de ejecución: {endTime - startTime:.2f} segundos")
+        log("Procesamiento COMPLETADO correctamente.\n")
+
+    except Exception as e:
+        log(f"ERROR FATAL: {e}")

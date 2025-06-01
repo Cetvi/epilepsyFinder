@@ -47,11 +47,9 @@ class Process extends Controller
             ->orderBy('id', 'asc')
             ->first();
 
-        $nextProjectToArray = $project ? $project->toArray() : null;
-
-        if ($nextProjectToArray) {
-            $projectId = $nextProjectToArray['project_id'];
-            $userId = $nextProjectToArray['user_id'];
+        if ($project) {
+            $projectId = $project->project_id;
+            $userId = $project->user_id;
             $extraInfo = '_' . $projectId . '_' . $userId;
 
             $folder = storage_path('app/private/nii_files');
@@ -67,9 +65,11 @@ class Process extends Controller
             if (file_exists($file2)) {
                 unlink($file2);
             }
-            $queueFolder = $folder . DIRECTORY_SEPARATOR . 'queueFiles';
+
+            $queueFolder = $folder . DIRECTORY_SEPARATOR . 'queueImages';
             $fileQueue0 = $queueFolder . DIRECTORY_SEPARATOR . 'patient_001_0000'.$extraInfo.'.nii.gz';
             $fileQueue1 = $queueFolder . DIRECTORY_SEPARATOR . 'patient_001_0001'.$extraInfo.'.nii.gz';
+
             if (file_exists($fileQueue0)) {
                 rename($fileQueue0, $file1);
             }
@@ -77,14 +77,20 @@ class Process extends Controller
                 rename($fileQueue1, $file2);
             }
 
-            self::processStarted($userId, $projectId);
-
+            $this->processStarted($userId, $projectId);
         }
     }
 
     public function processStarted($userId, $projectId){
-        $userEmail = User::find($userId)->email;
-        $userName = User::find($userId)->name;
+        $user = User::find($userId);
+        if (!$user) {
+            Log::warning('User not found', ['userId' => $userId]);
+            return;
+        }
+
+        $userEmail = $user->email;
+        $userName = $user->name;
+
         $projectName = DB::table('projects')
             ->where('id', $projectId)
             ->where('user_id', $userId)
@@ -94,11 +100,12 @@ class Process extends Controller
             $runFastSurfer = new UploadNiftyController();
             $runFastSurfer->runFastSurfer($projectId, $userId);
             Mail::to($userEmail)->send(new ProcessStartedMail($userName, $projectName));
-        }else{
+        } else {
             Log::warning('No se pudo enviar el correo: datos incompletos', [
                 'userEmail' => $userEmail,
                 'projectName' => $projectName
             ]);
         }
     }
+
 }
