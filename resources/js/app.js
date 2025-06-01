@@ -45,17 +45,19 @@ jQuery(function ($) {
 });
 
 function lastProject() {
-    $.ajax({
-        url: '/last-project',
-        type: 'GET',
-        dataType: 'html',
-        success: function (data) {
-            $('#cardLastProject').html(data);
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching last project:', error);
-        }
-    });
+    if(window.location.pathname == '/dashboard') {
+        $.ajax({
+            url: '/last-project',
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $('#cardLastProject').html(data);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching last project:', error);
+            }
+        });
+    }
 }
 
 function uploadMri() {

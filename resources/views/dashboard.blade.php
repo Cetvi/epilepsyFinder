@@ -28,6 +28,7 @@
                         </span>
                     </button>
                 </div>
+                
                 <div class="w-full lg:w-1/2">
                     <div id="cardLastProject" class="relative h-full bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex flex-col justify-between">
                         
