@@ -74,14 +74,12 @@ class UploadNiftyController extends Controller
         $scriptPath = base_path('scripts/runFastSurfer.py');
         $logPath = storage_path('logs/fastsurfer_laravel_output.log');
 
-        
+
         $cmd = "start /B python \"$scriptPath\" $userId $projectId > \"$logPath\" 2>&1";
 
-        
+
         pclose(popen($cmd, "r"));
         return response()->json(['status' => 'success']);
-
-
         
     }
 

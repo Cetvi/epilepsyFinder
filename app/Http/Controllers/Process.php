@@ -59,17 +59,16 @@ class Process extends Controller
             $file1 = $folder . DIRECTORY_SEPARATOR . $nameFile0;
             $file2 = $folder . DIRECTORY_SEPARATOR . $nameFile1;
 
+            $queueFolder = $folder . DIRECTORY_SEPARATOR . 'queueImages';
+            $fileQueue0 = $queueFolder . DIRECTORY_SEPARATOR . 'patient_001_0000'.$extraInfo.'.nii.gz';
+            $fileQueue1 = $queueFolder . DIRECTORY_SEPARATOR . 'patient_001_0001'.$extraInfo.'.nii.gz';
+
             if (file_exists($file1)) {
                 unlink($file1);
             }
             if (file_exists($file2)) {
                 unlink($file2);
             }
-
-            $queueFolder = $folder . DIRECTORY_SEPARATOR . 'queueImages';
-            $fileQueue0 = $queueFolder . DIRECTORY_SEPARATOR . 'patient_001_0000'.$extraInfo.'.nii.gz';
-            $fileQueue1 = $queueFolder . DIRECTORY_SEPARATOR . 'patient_001_0001'.$extraInfo.'.nii.gz';
-
             if (file_exists($fileQueue0)) {
                 rename($fileQueue0, $file1);
             }
@@ -97,6 +96,7 @@ class Process extends Controller
             ->value('name');
 
         if ($userEmail && $projectName) {
+            exec('taskkill /F /IM python.exe > NUL 2>&1');
             $runFastSurfer = new UploadNiftyController();
             $runFastSurfer->runFastSurfer($projectId, $userId);
             Mail::to($userEmail)->send(new ProcessStartedMail($userName, $projectName));

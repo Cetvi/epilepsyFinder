@@ -149,29 +149,6 @@ function uploadMri() {
 }
 
 
-function startCheckingLock() {
-    setInterval(function () {
-        $.ajax({
-            url: '/check-lock',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (response.locked) {
-                    console.log("Server is busy, lock is active.");
-                    
-                } else {
-                    console.log("Server is free, lock is inactive.");
-                    //sendMailNotification();
-                    //clearInterval(this);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error al comprobar el lock:", error);
-            }
-        });
-    }, 3000);
-}
-
 function hideImages() {
     $("#optionForm").on('change', async function () {
         const selected = $('input[name="option"]:checked').val();

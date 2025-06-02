@@ -17,6 +17,8 @@ def log(message):
         f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}\n")
 
 def runFastSurfer(folder, file, output):
+    log(f"Borrando contenido de la carpeta de salida: {output}")
+    deleteFileFolder(output)
     log(f"Iniciando runFastSurfer con archivo: {file}")
     cmd = [
         "docker", "run", "--gpus", "all",
@@ -112,7 +114,6 @@ if __name__ == "__main__":
         endTime = time.time()
         log(f"Tiempo total de ejecución: {endTime - startTime:.2f} segundos")
         log("Procesamiento COMPLETADO correctamente.\n")
-        deleteFileFolder(outputFolder)
 
     except Exception as e:
         log(f"ERROR FATAL: {e}")
