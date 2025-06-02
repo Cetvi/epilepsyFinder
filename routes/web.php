@@ -34,6 +34,14 @@ Route::get('/newProject', function () {
 })->middleware(['auth', 'verified'])->name('projects.create');
 
 
+Route::get('/newProjectTutorial', function () {
+    return view('tutorial/newProjectTutorial');
+});
+
+Route::get('/projectsTutorial', function () {
+    return view('tutorial/projectsTutorial');
+});
+
 Route::get('/more-info', [MoreInfo::class, 'showMoreInfo'])->middleware(['auth', 'verified'])->name('show-more-info');
 
 Route::get('/show-inference', [VolumenController::class, 'show'])->middleware(['auth', 'verified'])->name('show-inference.get');
@@ -46,9 +54,7 @@ Route::get('/last-project', [Projects::class,'lastProject'])->middleware(['auth'
 
 Route::post('/upload-image', [UploadNiftyController::class, 'uploadNifty'])->middleware(['auth', 'verified'])->name('upload.files');
 
-Route::post('/process-finished', [Process::class, 'processFinished'])->middleware(['auth', 'verified'])->name('/process.finished');
-
-Route::get('/check-lock', [LockController::class, 'check']);
+Route::get('/continue-process', [Process::class, 'continueQueue'])->middleware(['auth', 'verified'])->name('qeue.files');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -104,12 +104,12 @@ def main(userId, projectId):
     t1_path = os.path.join(processed_base, f'registered_{number}', f'skull_{number}', 't1', f't1_{number}_skull_stripped_lia.nii.gz')
     mask_path = r"C:\Users\javie\Desktop\TFG\app\epilepsyFinder\inference\patient_001.nii.gz"
 
-    create_images(flair_path, t1_path, mask_path, output_folder, type='skull_stripped')
+    create_images(flair_path, t1_path, mask_path, output_folder, type='skull_stripped', userId=userId, projectId=projectId)
 
     temporal_flair_path = os.path.join(processed_base, f'registered_{number}', 'flair', f'flair_{number}_lia.nii.gz')
     temporal_t1_path = os.path.join(fast_surfer_path, 'orig.nii')
 
-    create_images(temporal_flair_path, temporal_t1_path, mask_path, output_folder, type='with_skull', userId=userId)
+    create_images(temporal_flair_path, temporal_t1_path, mask_path, output_folder, type='with_skull', userId=userId, projectId=projectId)
 
     segmentation_path = os.path.join(fast_surfer_path, 'aparc.DKTatlas+aseg.deep.nii')
     lut_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\textFiles\FreeSurferColorLUT.txt'

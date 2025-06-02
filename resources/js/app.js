@@ -17,6 +17,7 @@ jQuery(function ($) {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+    tutorial();
     hideImages();
     controlImagesMoreInfo();
     window.deleteProject = function (projectId) {
@@ -43,6 +44,36 @@ jQuery(function ($) {
     }
 
 });
+
+function tutorial() {
+    $(document).on('click', '#tutorialButton', function () {
+        window.location.href= '/newProjectTutorial';
+    });
+
+    $(function () {
+
+        if(window.location.pathname == '/newProjectTutorial') {
+            introJs()
+            .oncomplete(function() {
+                window.location.href = '/projectsTutorial';
+            })
+            .onexit(function() {
+                window.location.href = '/projectsTutorial';
+            })
+            .start();
+        }else if(window.location.pathname == '/projectsTutorial') {
+            introJs()
+            .oncomplete(function() {
+                window.location.href = '/dashboard';
+            })
+            .onexit(function() {
+                window.location.href = '/dashboard';
+            })
+            .start();
+        } 
+    }
+    );
+}
 
 function lastProject() {
     if(window.location.pathname == '/dashboard') {
@@ -80,9 +111,12 @@ function uploadMri() {
 
         let formData = new FormData();
         formData.append('name', name);
-        for (let i = 0; i < files.length; i++) {
-            formData.append('files[]', files[i]);
-        }
+        formData.append('file0', files[0]);
+        formData.append('file1', files[1]);
+
+        
+        $("#loadingSpinner").show();
+        $("#uploadFiles").prop("disabled", true);
 
         $.ajax({
             url: '/upload-image',
@@ -91,22 +125,22 @@ function uploadMri() {
             processData: false,
             contentType: false,
             success: function (response) {
+                $("#loadingSpinner").hide();
+                $("#uploadFiles").prop("disabled", false);
+
                 if (response.status === 'success') {
                     alert('Files uploaded successfully! You will be notified when the processing is complete.');
-
-                }
-
-                if (response.status === 'busy') {
+                    window.location.href = '/show-projects';
+                } else if (response.status === 'busy') {
                     alert('The server is currently busy. Your files have been processed. You will be notified when the processing is complete.');
-                }
-
-                window.location.href = '/projects';
-
-                if (response.status === 'error') {
+                    window.location.href = '/show-projects';
+                } else if (response.status === 'error') {
                     alert(response.message);
                 }
             },
             error: function (xhr, status, error) {
+                $("#loadingSpinner").hide();
+                $("#uploadFiles").prop("disabled", false);
                 console.error('Error uploading files:', error);
                 alert('Error uploading files');
             }
@@ -114,28 +148,6 @@ function uploadMri() {
     });
 }
 
-function startCheckingLock() {
-    setInterval(function () {
-        $.ajax({
-            url: '/check-lock',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (response.locked) {
-                    console.log("Server is busy, lock is active.");
-                    
-                } else {
-                    console.log("Server is free, lock is inactive.");
-                    //sendMailNotification();
-                    //clearInterval(this);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error al comprobar el lock:", error);
-            }
-        });
-    }, 3000);
-}
 
 function hideImages() {
     $("#optionForm").on('change', async function () {
