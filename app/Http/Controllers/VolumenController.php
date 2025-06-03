@@ -4,15 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+use function Laravel\Prompts\table;
 
 class VolumenController extends Controller
 {
     public function show(Request $request)
     {
         $data = $request->all() ?? null;
+        $projectName = DB::table("projects")
+            ->where("id", $data["project_id"])
+            ->value("name");
         $path = storage_path('app/textFiles/FreeSurferColorLut.txt');
         $colorLut = $this->readFreesurferLut($path);
-        return view('showInference', ['colorLut' => json_encode($colorLut), 'data' => $data]);
+        return view('showInference', ['colorLut' => json_encode($colorLut), 'data' => $data, 'projectName' => $projectName]);
     }
 
     private function readFreesurferLut($path)

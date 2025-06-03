@@ -41,6 +41,7 @@
 
             <!-- Contenido desplazable -->
             <main class="w-full lg:w-3/4 space-y-8">
+                <h1 class="text-2xl font-bold text-gray-900 mb-">Project: {{ $projectName }}</h1>
                 <div class="no-skull diffOptions">
                     <h2 class="text-lg font-semibold text-gray-800 mb-2">FLAIR with mask</h2>
                     <img src="{{ asset('images/resultImages/flair_mask_overlay_skull_stripped'.$extraData.'.png') }}"
