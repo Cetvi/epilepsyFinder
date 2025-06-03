@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="flex justify-end space-x-2">
-                    <a href="" class="text-blue-600 hover:text-blue-800" data-intro="Here you can see the prediction and the FastSurfer segmentation of you files"  data-step="3">
+                    <a href="" class="text-blue-600 hover:text-blue-800" data-intro="Here you can see the prediction and the FastSurfer segmentation of your files"  data-step="3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
