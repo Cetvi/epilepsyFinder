@@ -47,36 +47,74 @@ jQuery(function ($) {
 
 function tutorial() {
     $(document).on('click', '#tutorialButton', function () {
-        window.location.href= '/newProjectTutorial';
+        window.location.href = '/newProjectTutorial';
     });
 
     $(function () {
 
-        if(window.location.pathname == '/newProjectTutorial') {
+        if (window.location.pathname == '/newProjectTutorial') {
             introJs()
-            .oncomplete(function() {
-                window.location.href = '/projectsTutorial';
-            })
-            .onexit(function() {
-                window.location.href = '/projectsTutorial';
-            })
-            .start();
-        }else if(window.location.pathname == '/projectsTutorial') {
+                .oncomplete(function () {
+                    window.location.href = '/projectsTutorial';
+                })
+                .onexit(function () {
+                    window.location.href = '/projectsTutorial';
+                })
+                .start();
+        } else if (window.location.pathname == '/projectsTutorial') {
             introJs()
-            .oncomplete(function() {
-                window.location.href = '/dashboard';
-            })
-            .onexit(function() {
-                window.location.href = '/dashboard';
-            })
-            .start();
-        } 
+                .oncomplete(function () {
+                    window.location.href = '/showProjectTutorial';
+                })
+                .onexit(function () {
+                    window.location.href = '/showProjectTutorial';
+                })
+                .start();
+        } else if (window.location.pathname == '/showProjectTutorial') {
+            introJs()
+                .oncomplete(function () {
+                    window.location.href = '/moreInfoTutorial';
+                })
+                .onexit(function () {
+                    window.location.href = '/moreInfoTutorial';
+                })
+                .start();
+        } else {
+            introJs()
+                .oncomplete(function () {
+                    showEndTutorialBox();
+                })
+                .onexit(function () {
+                    showEndTutorialBox();
+                })
+                .start();
+        }
     }
     );
 }
 
+function showEndTutorialBox() {
+    document.body.style.overflow = 'hidden';
+    const box = `
+        <div class="fixed inset-0 flex items-center justify-center z-50" 
+            id="end-tutorial-box" style="background-color: rgba(0,0,0,0.7);">
+            <div class="bg-white rounded-2xl shadow-lg p-8 text-center max-w-md w-full relative">
+                <img src="/logo/logo.png" alt="Logo" class="mx-auto mb-4 w-20 h-20">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">This is the end of the tutorial</h2>
+                <p class="text-gray-600">Hope this tutorial has been helpful!</p>
+                <button onclick="window.location.href='/dashboard'" 
+                        class="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Go to Dashboard
+                </button>
+            </div>
+        </div>
+    `;
+
+    $('body').append(box);
+}
+
 function lastProject() {
-    if(window.location.pathname == '/dashboard') {
+    if (window.location.pathname == '/dashboard') {
         $.ajax({
             url: '/last-project',
             type: 'GET',
@@ -114,7 +152,7 @@ function uploadMri() {
         formData.append('file0', files[0]);
         formData.append('file1', files[1]);
 
-        
+
         $("#loadingSpinner").show();
         $("#uploadFiles").prop("disabled", true);
 
@@ -265,7 +303,7 @@ async function initVTK() {
 }
 
 
-function controlImagesMoreInfo(){
+function controlImagesMoreInfo() {
     $(document).on('click', '.toggle-btn', function () {
         console.log('Toggle button clicked');
         const targetId = $(this).data('target');
