@@ -196,6 +196,7 @@ function hideImages() {
 
         if (selected === 'segmentation') {
             $('#vtk-container').removeClass('hidden');
+            $('#fastSurferColours').removeClass('hidden');
 
             setTimeout(async () => {
                 if (!window.vtkReady) {
@@ -207,6 +208,7 @@ function hideImages() {
             }, 10);
         } else {
             $('#vtk-container').addClass('hidden');
+            $('#fastSurferColours').addClass('hidden');
         }
     });
 

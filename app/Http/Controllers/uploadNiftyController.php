@@ -28,7 +28,7 @@ class UploadNiftyController extends Controller
                 'file',
                 function ($attribute, $value, $fail) {
                     if (!str_ends_with($value->getClientOriginalName(), '.nii.gz')) {
-                        $fail('El archivo debe tener la extensión .nii.gz');
+                        $fail('The file must have extension .nii.gz');
                     }
                 },
             ],

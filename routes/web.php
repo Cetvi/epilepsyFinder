@@ -64,6 +64,8 @@ Route::post('/upload-image', [UploadNiftyController::class, 'uploadNifty'])->mid
 
 Route::get('/continue-process', [Process::class, 'continueQueue'])->middleware(['auth', 'verified'])->name('qeue.files');
 
+Route::get('/fastsurfer-colours', [VolumenController::class, 'freeSurferColours'])->middleware(['auth', 'verified'])->name('freesurfer.colours');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

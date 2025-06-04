@@ -21,7 +21,7 @@ class VolumenController extends Controller
         return view('showInference', ['colorLut' => json_encode($colorLut), 'data' => $data, 'projectName' => $projectName]);
     }
 
-    private function readFreesurferLut($path)
+    private function readFreesurferLut($path, array $allowedIds = null)
     {
         $lut = [];
         $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -33,6 +33,12 @@ class VolumenController extends Controller
             $parts = preg_split('/\s+/', $line);
             if (count($parts) >= 6) {
                 $labelId = intval($parts[0]);
+
+                // Si se pasó una lista de IDs permitidos, filtrar
+                if ($allowedIds && !in_array($labelId, $allowedIds)) {
+                    continue;
+                }
+
                 $r = intval($parts[2]) / 255;
                 $g = intval($parts[3]) / 255;
                 $b = intval($parts[4]) / 255;
@@ -41,4 +47,41 @@ class VolumenController extends Controller
         }
         return $lut;
     }
+
+
+    public function freeSurferColours()
+    {
+        $path = storage_path('app/textFiles/FreeSurferColorLut.txt');
+        $idsPath = storage_path('app/textFiles/label_ids.json');
+        $namesPath = storage_path('app/textFiles/label_names.json');
+
+        $validIds = json_decode(file_get_contents($idsPath), true);
+        $labelNames = json_decode(file_get_contents($namesPath), true); // id => name
+
+        $filteredLut = $this->readFreesurferLut($path, $validIds);
+
+        // Formateamos para la vista
+        $colours = [];
+        foreach ($filteredLut as $id => $rgb) {
+            $colours[] = [
+                'id' => $id,
+                'name' => $labelNames[$id] ?? 'Unknown',
+                'rgb' => $rgb,
+                'css' => 'rgb(' . implode(',', array_map(fn($c) => round($c * 255), $rgb)) . ')'
+            ];
+        }
+        foreach ($colours as &$entry) {
+            if (preg_match('/rgb\((\d+),\s*(\d+),\s*(\d+)\)/', $entry['css'], $matches)) {
+                $r = intval($matches[1]);
+                $g = intval($matches[2]);
+                $b = intval($matches[3]);
+                $entry['hex'] = sprintf("#%02x%02x%02x", $r, $g, $b);
+            } else {
+                $entry['hex'] = null; // o algún valor por defecto
+            }
+        }
+
+        return view('showColours', ['colours' => $colours]);
+    }
+
 }

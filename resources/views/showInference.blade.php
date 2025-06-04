@@ -73,6 +73,13 @@
                 </div>
 
                 <div id="vtk-container" class="w-full h-[600px] bg-gray-900 rounded-lg shadow-lg hidden"></div>
+                <div id="fastSurferColours" class="hidden">
+                    <a href="{{ route('freesurfer.colours')}}"
+                        class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-5 rounded-full shadow-lg transition duration-200">
+                        Labels colours
+                    </a>
+                </div>
+
 
             </main>
         </div>
