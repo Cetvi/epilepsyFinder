@@ -15,6 +15,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from nilearn import plotting
+from config import BASE_URL
 
 def plot_labels(anat_img_path, seg_img_path, labels, output_dir, name):
     anat_img = nib.load(anat_img_path)
@@ -118,10 +119,10 @@ def create_info_json(lesion_mask, fastSurferSeg, anat_img, output_json, output_i
 
 
 if __name__ == "__main__":
-    mask_path = r"C:\Users\javie\Desktop\TFG\app\epilepsyFinder\inference\patient_001.nii.gz"
-    fastSurferSeg_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\fileFolder\image-1\mri\niiFiles\aparc.DKTatlas+aseg.deep.nii'
-    anat_img_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\fileFolder\image-1\mri\niiFiles\orig.nii'
-    output_json_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\extraInfo_2_1.json'
-    output_img_dir = r"C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\images\resultImages"
+    mask_path = BASE_URL / "inference" / "patient_001.nii.gz"
+    fastSurferSeg_path = BASE_URL / "fileFolder" / "image-1" / "mri" / "niiFiles" / "aparc.DKTatlas+aseg.deep.nii"
+    anat_img_path = BASE_URL / "fileFolder" / "image-1" / "mri" / "niiFiles" / "orig.nii"
+    output_json_path = BASE_URL / "public" / "json" / "extraInfo_2_1.json"
+    output_img_dir = BASE_URL / "public" / "images" / "resultImages"
 
     create_info_json(mask_path, fastSurferSeg_path, anat_img_path, output_json_path, output_img_dir, '_2_1')

@@ -7,6 +7,7 @@ from postPorcesing import main as postProcessing
 from runInference import run_batch_script as inference
 from createImages import main as createImages
 from processDone import notifyProcessFinished
+from config import BASE_URL
 
 # Ruta absoluta para el log
 LOG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'storage', 'logs', 'fastsurfer_debug.log'))
@@ -20,11 +21,12 @@ def runFastSurfer(folder, file, output):
     log(f"Borrando contenido de la carpeta de salida: {output}")
     deleteFileFolder(output)
     log(f"Iniciando runFastSurfer con archivo: {file}")
+
     cmd = [
         "docker", "run", "--gpus", "all",
         "-v", rf"{folder}:/data",
         "-v", rf"{output}:/output",
-        "-v", "C:\\Users\\javie\\Desktop\\TFG\\app\\epilepsyFinder\\textFiles:/fs_license",
+        "-v", rf"{BASE_URL / 'textFiles'}:/fs_license",
         "--rm", "--user", "1000:1000", "deepmi/fastsurfer:latest",
         "--fs_license", "/fs_license/license.txt",
         "--seg_only",
@@ -34,7 +36,8 @@ def runFastSurfer(folder, file, output):
         "--no_surfreg",
         "--t1", f"/data/{file}",
         "--sid", "image-1", "--sd", "/output"
-        ]
+    ]
+
     try:
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
@@ -70,7 +73,6 @@ def deleteFileFolder(folder):
 
 if __name__ == "__main__":
     log("======== NUEVA EJECUCIÓN ========")
-
     if len(sys.argv) < 3:
         log("Error: faltan argumentos. Esperado: userId y projectId")
         sys.exit(1)

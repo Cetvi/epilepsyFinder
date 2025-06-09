@@ -2,6 +2,8 @@
 import nibabel as nib
 import numpy as np
 import json
+from config import BASE_URL
+
 
 def convert_mri_mask_to_json(mri_path, mask_path, output_path):
     mri_img = nib.load(mri_path)
@@ -46,8 +48,8 @@ if __name__ == "__main__":
     mask_path = sys.argv[2]
     output_path = sys.argv[3]'''
 
-    mri_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\temporalFiles\registered_1\skull_1\t1\t1_1_skull_stripped_lia.nii.gz'
-    mask_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\fileFolder\image-1\mri\niiFiles\aparc.DKTatlas+aseg.deep.nii'
-    output_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\volume_data_2_1.json'
+    mri_path = BASE_URL / "temporalFiles" / "registered_1" / "skull_1" / "t1" / "t1_1_skull_stripped_lia.nii.gz"
+    mask_path = BASE_URL / "fileFolder" / "image-1" / "mri" / "niiFiles" / "aparc.DKTatlas+aseg.deep.nii"
+    output_path = BASE_URL / "public" / "json" / "volume_data_2_1.json"
 
     convert_mri_mask_to_json(mri_path, mask_path, output_path)

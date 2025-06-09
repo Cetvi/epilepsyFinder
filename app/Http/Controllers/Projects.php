@@ -68,8 +68,9 @@ class Projects extends Controller
             ->where('projects.user_id', $id)
             ->where('process_control.done', 1)
             ->orderBy('create_date', 'desc')
+            ->orderBy('projects.id', 'desc')
             ->first();
-
+            
         return view('lastProject', [
             'project' => $project,
         ]);

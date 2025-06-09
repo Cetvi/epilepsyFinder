@@ -24,6 +24,7 @@ from nibabel.orientations import aff2axcodes, axcodes2ornt, ornt_transform, appl
 import gc
 import gzip
 from importMap import importMap
+from config import BASE_URL
 
 LABELS_MAP = importMap()
 
@@ -213,7 +214,7 @@ def filterRegions(text_dir, output_dir, file_dir, number):
     t1_data = nib.load(t1_file).get_fdata()
     index_str = f"{number:03d}"
 
-    data_text = parse_txt(text_dir, threshold=0.9)
+    data_text = parse_txt(text_dir, threshold=0.8)
     flair_output = os.path.join(output_dir, f"patient_{index_str}_0000.nii.gz")
     t1_output = os.path.join(output_dir, f"patient_{index_str}_0001.nii.gz")
 
@@ -283,7 +284,7 @@ def main():
     fastSurferPath = os.path.join(os.path.dirname(__file__), '..', 'fileFolder', 'image-1', 'mri')
     flair_dir = os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'private', 'nii_files')
     output_dir = os.path.join(os.path.dirname(__file__), '..', 'temporalFiles')
-    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))  # Gets you to the root APP level
+    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     txt_dir = os.path.join(BASE_DIR, 'epilepsyFinder', 'textFiles', 'resultados_segmentacion_seg_WithCC_global_75.txt')
     final_dir = os.path.join(os.path.dirname(__file__), '..', 'fileFolder', 'processedFiles')
 

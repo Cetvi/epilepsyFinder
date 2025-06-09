@@ -14,6 +14,6 @@ nnUNetv2_predict ^
  -o "C:\Users\javie\Desktop\TFG\app\epilepsyFinder\inference" ^
  -d 501 ^
  -c 3d_fullres ^
- -f 3 ^
+ -f 0 1 3 ^
  -chk checkpoint_best.pth
 

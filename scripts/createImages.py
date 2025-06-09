@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from convertMriToVtk import convert_mri_mask_to_json
 from moreInfo import create_info_json
+from config import BASE_URL
+import sys
 
 def detect_latest_number(base_dir):
     registered_dirs = [d for d in os.listdir(base_dir) if re.match(r'registered_\d+', d)]
@@ -27,6 +29,11 @@ def create_images(flair_path, t1_path, mask_path, output_folder, type, userId, p
 
     mask_data = mask_img.get_fdata()
     center_of_mass_voxel = scipy.ndimage.center_of_mass(mask_data)
+
+    if np.isnan(center_of_mass_voxel).any():
+        print("Advertencia: la máscara está vacía. Usando el centro del volumen.")
+        center_of_mass_voxel = np.array(mask_data.shape) // 2
+        
     voxel_coords = np.array([*center_of_mass_voxel, 1])
     affine = flair_img.affine
     world_coords = affine @ voxel_coords
@@ -94,15 +101,15 @@ def create_segmentation_image(anat_path, seg_path, lut_path, output_path, title=
     print("Imagen de segmentación guardada en:", output_path)
 
 def main(userId, projectId):
-    processed_base = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\temporalFiles'
-    output_folder = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\images\resultImages'
-    fast_surfer_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\fileFolder\image-1\mri\niiFiles'
+    processed_base = BASE_URL / "temporalFiles"
+    output_folder = BASE_URL / "public" / "images" / "resultImages"
+    fast_surfer_path = BASE_URL / "fileFolder" / "image-1" / "mri" / "niiFiles"
     
     number = detect_latest_number(processed_base)
 
     flair_path = os.path.join(processed_base, f'registered_{number}', f'skull_{number}', 'flair', f'flair_{number}_skull_stripped_lia.nii.gz')
     t1_path = os.path.join(processed_base, f'registered_{number}', f'skull_{number}', 't1', f't1_{number}_skull_stripped_lia.nii.gz')
-    mask_path = r"C:\Users\javie\Desktop\TFG\app\epilepsyFinder\inference\patient_001.nii.gz"
+    mask_path = BASE_URL / "inference" / "patient_001.nii.gz"
 
     create_images(flair_path, t1_path, mask_path, output_folder, type='skull_stripped', userId=userId, projectId=projectId)
 
@@ -112,18 +119,20 @@ def main(userId, projectId):
     create_images(temporal_flair_path, temporal_t1_path, mask_path, output_folder, type='with_skull', userId=userId, projectId=projectId)
 
     segmentation_path = os.path.join(fast_surfer_path, 'aparc.DKTatlas+aseg.deep.nii')
-    lut_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\textFiles\FreeSurferColorLUT.txt'
+    lut_path = BASE_URL / "textFiles" / "FreeSurferColorLUT.txt"
     seg_output_path = os.path.join(output_folder, f"segmentation_overlay_{projectId}_{userId}.png")
 
     create_segmentation_image(temporal_flair_path, segmentation_path, lut_path, seg_output_path, title="Segmentation Overlay", userId=userId, projectId=projectId)
 
-    vkt_output_path = fr'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\volume_data_{projectId}_{userId}.json'
+    vkt_output_path = BASE_URL / "public" / "json" / f"volume_data_{projectId}_{userId}.json"
     convert_mri_mask_to_json(t1_path, segmentation_path, vkt_output_path)
 
-    anat_img_path = r'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\fileFolder\image-1\mri\niiFiles\orig.nii'
-    output_img_dir = r"C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\images\resultImages"
-    create_info_json(mask_path, segmentation_path, anat_img_path,  fr'C:\Users\javie\Desktop\TFG\app\epilepsyFinder\public\json\extraInfo_{projectId}_{userId}.json', output_img_dir, f'_{projectId}_{userId}')
+    anat_img_path = BASE_URL / "fileFolder" / "image-1" / "mri" / "niiFiles" / "orig.nii"
+    output_img_dir = BASE_URL / "public" / "images" / "resultImages"
+    create_info_json(mask_path, segmentation_path, anat_img_path,  BASE_URL / "public" / "json" / f"extraInfo_{projectId}_{userId}.json", output_img_dir, f'_{projectId}_{userId}')
     #aqui tengo que crear las imagenes de las labes y zonas interesantes
 
 if __name__ == "__main__":
-    main()
+    userId = sys.argv[1]
+    projectId = sys.argv[2]
+    main(userId, projectId)
