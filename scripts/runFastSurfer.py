@@ -88,6 +88,7 @@ if __name__ == "__main__":
         log("Lock file creado.")
 
         outputFolder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fileFolder'))
+        os.makedirs(outputFolder, exist_ok=True)
         folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'private', 'nii_files'))
         file = 'patient_001_0001.nii.gz'
 
