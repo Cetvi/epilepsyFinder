@@ -35,11 +35,14 @@ yarn-error.log
 
 # Archivos específicos
 textFiles/license.txt
-resultNnUNet/
+!resultNnUNet/*
+resultNnUNet/*
 
 # Otros directorios ignorados
-fileFolder/
-inference/
+fileFolder/image-1/*
+!fileFolder/
+inference/*
+!inference/
 public/json/
 
 /public/fotos/

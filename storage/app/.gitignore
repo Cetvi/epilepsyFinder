@@ -1,5 +1,6 @@
 *
 !private/
+!private/nii_files/
 !public/
 !textFiles/
 !textFiles/FreeSurferColorLUT.txt
