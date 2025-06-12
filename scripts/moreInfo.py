@@ -63,6 +63,10 @@ def create_info_json(lesion_mask, fastSurferSeg, anat_img, output_json, output_i
     data_mask = nib.load(lesion_mask).get_fdata()
     data_seg = nib.load(fastSurferSeg).get_fdata()
 
+    if data_mask.shape != data_seg.shape:
+        print("Different shape")
+        return ''
+
     lesion_mask_bool = data_mask > 0
     lesion_labels = data_seg[lesion_mask_bool].astype(np.int32)
 

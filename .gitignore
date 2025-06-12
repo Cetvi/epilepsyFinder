@@ -7,10 +7,16 @@
 Homestead.*
 storage/*.key
 storage/pail
-vendor
+/vendor/
+
+
+!storage/
+!storage/app/
+!storage/app/textFiles/
+!storage/app/textFiles/**
 
 # Node / JS
-node_modules
+node_modules/
 npm-debug.log
 yarn-error.log
 
@@ -27,13 +33,19 @@ yarn-error.log
 # Composer
 /auth.json
 
-textFiles/
-scripts/key.py
+# Archivos específicos
+textFiles/license.txt
+resultNnUNet/
 
-storage/temporalFiles/
+# Otros directorios ignorados
 fileFolder/
 inference/
 public/json/
+
+/public/fotos/
+/storage/uploads/
+
+# Ignorar archivos por extensión
 **/*.nii
 **/*.nii.gz
 **/*.mgz
@@ -41,6 +53,4 @@ public/json/
 *.jpeg
 *.png
 *.gif
-/public/fotos/
-/storage/uploads/
 *.pyc
