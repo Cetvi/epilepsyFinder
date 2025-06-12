@@ -1,4 +1,8 @@
 *
 !private/
 !public/
+!textFiles/
+!textFiles/FreeSurferColorLUT.txt
+!textFiles/label_ids.json
+!textFiles/label_names.json
 !.gitignore
