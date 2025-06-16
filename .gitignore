@@ -55,5 +55,7 @@ public/json/
 *.jpg
 *.jpeg
 *.png
+!*_42_1.png
+!*_42_1.json
 *.gif
 *.pyc
