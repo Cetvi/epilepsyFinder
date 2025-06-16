@@ -43,7 +43,7 @@ Designed for both clinical professionals and casual users, it provides rich visu
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Requirements
 
@@ -79,3 +79,27 @@ pip install -r requirements.txt
 ```bash
 composer run dev
 ```
+
+#### Structure
+
+epilepsyFinder/
+│
+├── app/                        # Laravel MVC application
+│   ├── Http/Controllers/
+│   ├── Models/
+│   └── Views/
+│
+├── scripts/            # All segmentation/inference logic
+│   ├── config.py              # Path configuration
+│   ├── runFastSurfer.py       # Main runner
+│   ├── runInference/          # Run inference
+│   └── etc.
+|
+├── storage/app/private/nii_files/  # Input MRI files (.nii.gz)
+│
+├── fileFolder/image-<id>/mri/      # FastSurfer segmentation output
+├── inference/   # nnUNet v2 inference output
+│
+├── public/images/           # Visualization assets
+├── public/jsons/            # File's JSONs
+└── resources/js/            # JQuery, Bootstrap-based frontend
