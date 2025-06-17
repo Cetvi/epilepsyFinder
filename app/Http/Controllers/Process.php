@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 use App\Mail\ProcessFinishedMail;
 use App\Mail\ProcessStartedMail;
 use App\Http\Controllers\UploadNiftyController;
@@ -53,6 +54,9 @@ class Process extends Controller
             $extraInfo = '_' . $projectId . '_' . $userId;
 
             $folder = storage_path('app/private/nii_files');
+            if (!File::exists($folder)) {
+                File::makeDirectory($folder, 0755, true);
+            }
             $nameFile0 = 'patient_001_0000.nii.gz';
             $nameFile1 = 'patient_001_0001.nii.gz';
 

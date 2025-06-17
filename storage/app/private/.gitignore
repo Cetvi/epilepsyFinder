@@ -1,4 +1,4 @@
-*
-!nii_files/
-!nii_files/queueImages/
+
 !.gitignore
+!nii_files/.gitkeep
+!nii_files/queueImages/.gitkeep
